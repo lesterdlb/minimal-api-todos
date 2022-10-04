@@ -1,43 +1,36 @@
+using Microsoft.EntityFrameworkCore;
+using todos_api.Context;
+using todos_api.Contracts;
+using todos_api.Services;
+
+const string allowSpecificOrigins = "_allowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<ApiContext>(opt =>
+    opt.UseInMemoryDatabase("api"));
+builder.Services.AddScoped<ITodoService, TodoService>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(allowSpecificOrigins, policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.MapGet("/api/todos", async (ITodoService service) =>
+    await service.GetTodos());
 
-app.UseHttpsRedirection();
+app.MapPost("/api/todos", async (ITodoService service, TodoRequest todo) =>
+    await service.CreateTodo(todo));
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.MapDelete("api/todos/{id}", async (ITodoService service, Guid id) =>
+    await service.DeleteTodo(id));
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateTime.Now.AddDays(index),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
+app.UseCors(allowSpecificOrigins);
 app.Run();
-
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
