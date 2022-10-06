@@ -1,0 +1,13 @@
+﻿header {
+    @include flex-box();
+    padding-top: 0.3rem;
+    background-color: transparent;
+
+    h1 {
+        font-size: $title-font-size;
+        font-weight: $font-bold;
+        text-transform: uppercase;
+        letter-spacing: 8px;
+        color: $text-color;
+    }
+}

@@ -1,0 +1,11 @@
+﻿.filters {
+    @include flex-box();
+    height: $height;
+    padding: 0 4rem;
+    font-size: 0.9rem;
+    font-weight: $font-bold;
+
+    .active-filter {
+        color: $primary-color;
+    }
+}
