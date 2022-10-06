@@ -4,7 +4,7 @@ interface AddTodoProps {
     onAddTodo: (title: string) => void;
 }
 
-const AddTodo = ({onAddTodo} : AddTodoProps) => {
+const AddTodo = ({onAddTodo}: AddTodoProps) => {
     const [title, setTitle] = useState('');
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -17,8 +17,10 @@ const AddTodo = ({onAddTodo} : AddTodoProps) => {
     return (
         <>
             <form onSubmit={handleSubmit}>
-                <input type='text' value={title} onChange={event => setTitle(event.target.value)}/>
-                <button type='submit'>Add Todo</button>
+                <span className="round"></span>
+                <input type="text" id="todo-input" placeholder="Create a new todo..."
+                       value={title} onChange={event => setTitle(event.target.value)}/>
+                <button type='submit' className="add-todo">+</button>
             </form>
         </>
     );
