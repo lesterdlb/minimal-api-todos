@@ -28,10 +28,10 @@ button {
 }
 
 main {
-    width: 100vw;
+    width: 100%;
     min-height: 100vh;
     background-repeat: no-repeat;
-    background-position: top left;
+    background-position: top center;
     background-size: contain;
     @include themed() {
         color: get-theme-value('text-primary-color');
@@ -80,5 +80,34 @@ main {
     opacity: 0.7;
     @include themed() {
         color: get-theme-value('text-secondary-color');
+    }
+}
+
+@media all and (min-width: 800px) {
+    main {
+        @include themed() {
+            background-image: get-theme-value('bg-desktop-image');
+        }
+    }
+    
+    .wrapper {
+        max-width: 650px;
+        min-height: 80vh;
+    }
+    
+    .filters {
+        flex: 1;
+    }
+    
+    .todo-item {
+        > .btn {
+           opacity: 0;
+        }
+        
+        &:hover {
+            > .btn {
+                opacity: 1;
+            }
+        }
     }
 }

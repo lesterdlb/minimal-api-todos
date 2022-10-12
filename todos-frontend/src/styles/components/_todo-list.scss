@@ -20,6 +20,7 @@
 }
 
 .todo-item {
+    cursor: pointer;
     height: $height;
     padding: 0.5rem 0.5rem 0.5rem 1rem;
     @include flex-box(space-evenly);
@@ -28,7 +29,7 @@
         background-color: get-theme-value('bg-secondary-color');
         border-bottom: 1px solid get-theme-value('check-icon-color');
     }
-    
+
     > .btn {
         width: 40px;
         height: 40px;
@@ -53,8 +54,14 @@
     @include themed() {
         color: get-theme-value('text-primary-color');
     }
-}
 
+}
+.completed {
+    text-decoration: line-through;
+    @include themed() {
+        color: get-theme-value('text-secondary-color');
+    }
+}
 .checkbox-label {
     width: 25px;
     height: 25px;
