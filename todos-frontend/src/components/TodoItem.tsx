@@ -1,4 +1,4 @@
-﻿import {FC, memo} from 'react';
+import {FC, memo} from 'react';
 import {useDrag, useDrop} from 'react-dnd';
 import {ReactComponent as Cross} from '../images/icon-cross.svg';
 import {Todo} from '../model/Todo';
@@ -22,8 +22,7 @@ const TodoItem: FC<TodoItemProps> = memo((
     {todo, moveTodo, findTodo, onStatusChange, onDeleteTodo, onTodoIndexChange}) => {
     const originalIndex = findTodo(todo.id).index;
 
-    const [{isDragging}, drag] = useDrag(
-        () => ({
+    const [{isDragging}, drag] = useDrag(() => ({
             type: ItemTypes.TODO,
             item: {todo, originalIndex},
             collect: monitor => ({
@@ -36,19 +35,19 @@ const TodoItem: FC<TodoItemProps> = memo((
                     moveTodo(droppedTodo.id, originalIndex);
                 }
             },
-        }),
-        [todo, originalIndex, moveTodo]
+        }), [todo, originalIndex, moveTodo]
     );
 
     const [, drop] = useDrop(() => ({
+
             accept: ItemTypes.TODO,
-            hover({todo: draggedTodo}: Item) {
+            hover: ({todo: draggedTodo}: Item) => {
                 if (draggedTodo.id !== todo.id) {
                     const {index: overIndex} = findTodo(todo.id);
                     moveTodo(draggedTodo.id, overIndex);
                 }
             },
-            drop(item: Item) {
+            drop: (item: Item) => {
                 const {index: overIndex} = findTodo(todo.id);
                 if (item.originalIndex === overIndex) {
                     return;

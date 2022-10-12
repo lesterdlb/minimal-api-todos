@@ -1,4 +1,4 @@
-﻿import {useContext} from "react";
+import {useContext} from "react";
 import ThemeContext from "./ThemeContext";
 import {ReactComponent as Sun} from '../images/icon-sun.svg';
 import {ReactComponent as Moon} from '../images/icon-moon.svg';

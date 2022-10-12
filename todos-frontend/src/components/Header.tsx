@@ -1,4 +1,4 @@
-﻿import ThemeSetter from '../contexts/ThemeSetter';
+import ThemeSetter from '../contexts/ThemeSetter';
 
 const Header = () => {
     return (

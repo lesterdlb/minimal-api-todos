@@ -1,4 +1,4 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 import {CreateTodo, Todo} from '../model/Todo';
 import BaseService from './BaseService';
 

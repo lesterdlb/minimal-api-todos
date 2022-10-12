@@ -1,4 +1,4 @@
-﻿import {CreateTodo, Todo} from '../model/Todo';
+import {CreateTodo, Todo} from '../model/Todo';
 
 export default interface BaseService {
     getTodos(completed?: boolean): Promise<Todo[]>;

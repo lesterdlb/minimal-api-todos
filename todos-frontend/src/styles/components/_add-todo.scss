@@ -1,4 +1,4 @@
-﻿form {
+form {
     @include flex-box(space-evenly);
     @include themed() {
         color: get-theme-value('bg-secondary-color');

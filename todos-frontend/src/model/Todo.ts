@@ -1,4 +1,4 @@
-﻿export interface CreateTodo {
+export interface CreateTodo {
     title: string;
     isCompleted: boolean;
 }

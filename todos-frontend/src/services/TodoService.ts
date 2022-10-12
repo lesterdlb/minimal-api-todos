@@ -1,4 +1,4 @@
-﻿import BaseService from './BaseService';
+import BaseService from './BaseService';
 import LocalTodoService from './LocalTodoService';
 import ApiTodoService from './ApiTodoService';
 import {CreateTodo, Todo} from '../model/Todo';

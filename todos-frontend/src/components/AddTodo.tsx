@@ -1,17 +1,17 @@
-﻿import {useState} from 'react';
+import {useRef} from 'react';
 
 interface AddTodoProps {
     onAddTodo: (title: string) => void;
 }
 
 const AddTodo = ({onAddTodo}: AddTodoProps) => {
-    const [title, setTitle] = useState('');
+    const titleInputRef = useRef<HTMLInputElement>(null);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!title) return;
-        onAddTodo(title);
-        setTitle('');
+        if (!titleInputRef.current?.value) return;
+        onAddTodo(titleInputRef.current?.value);
+        titleInputRef.current.value = '';
     }
 
     return (
@@ -23,7 +23,7 @@ const AddTodo = ({onAddTodo}: AddTodoProps) => {
                 </label>
                 <input type="text" id="todo-input" placeholder="Create a new todo..."
                        className='todo-input' autoComplete='off'
-                       value={title} onChange={event => setTitle(event.target.value)}/>
+                       ref={titleInputRef}/>
                 <button type='submit' className="btn add-todo">+</button>
             </form>
         </>

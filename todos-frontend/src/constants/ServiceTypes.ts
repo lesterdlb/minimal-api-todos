@@ -1,4 +1,4 @@
-﻿export enum ServiceTypes {
+export enum ServiceTypes {
     Local = 'local',
     Api = 'api'
 }

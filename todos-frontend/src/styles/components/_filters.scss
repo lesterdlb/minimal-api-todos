@@ -1,17 +1,10 @@
-﻿.filters {
+.filters {
     @include flex-box();
     height: $height;
     padding: 0 4rem;
     font-size: 0.9rem;
     font-weight: $font-bold;
     
-    .btn {
-        @include themed() {
-            color: get-theme-value('text-secondary-color');
-        }
-        width: 100%;
-    }
-
     .active-filter {
         color: $primary-color !important;
     }

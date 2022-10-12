@@ -1,4 +1,4 @@
-﻿.todos-container {
+.todos-container {
     @include themed() {
         box-shadow: 0 8px 15px get-theme-value('shadow-color');
     }

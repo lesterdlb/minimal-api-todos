@@ -1,4 +1,4 @@
-﻿import {FC, memo, useCallback, useEffect, useState} from 'react';
+import {FC, memo, useCallback, useEffect, useState} from 'react';
 import {useDrop} from 'react-dnd';
 import {Todo} from '../model/Todo';
 import {ItemTypes, FiltersTypes} from '../constants';
@@ -16,12 +16,15 @@ import useWindowSize from '../hooks/useWindowSize';
 
 const TodoList: FC = memo(() => {
     const [todos, setTodos] = useState<Todo[]>([]);
-    const [_, drop] = useDrop(() => ({accept: ItemTypes.TODO}));
+    const [loading, setLoading] = useState<boolean>(false);
+    const [, drop] = useDrop(() => ({accept: ItemTypes.TODO}));
     const size = useWindowSize();
 
     const fetchTodos = async (completed?: boolean) => {
+        setLoading(true);
         const response = await TodoService.getTodos(completed);
         setTodos(response);
+        setLoading(false);
     }
     
     // Drag and Drop Functions
@@ -39,7 +42,7 @@ const TodoList: FC = memo(() => {
                 newTodos.splice(atIndex, 0, removed);
                 return newTodos;
             });
-        }, [findTodo, todos, setTodos]
+        }, [findTodo, setTodos]
     );
 
     // Events Handlers
@@ -50,21 +53,19 @@ const TodoList: FC = memo(() => {
 
     const handleUpdateStatus = async (id: string) => {
         await TodoService.updateTodoStatus(id);
-        setTodos(todos.map(
-            todo => todo.id === id
-                ? {...todo, isCompleted: !todo.isCompleted}
-                : todo)
+        setTodos(prevTodos =>
+            prevTodos.map(todo => todo.id === id ? {...todo, isCompleted: !todo.isCompleted} : todo)
         );
     }
 
     const handleDeleteTodo = async (id: string) => {
         await TodoService.deleteTodo(id);
-        setTodos(todos.filter(todo => todo.id !== id));
+        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
     }
 
     const handleDeleteCompletedTodos = async () => {
         await TodoService.deleteCompletedTodos();
-        setTodos(todos.filter(todo => !todo.isCompleted));
+        setTodos(prevTodos => prevTodos.filter(todo => !todo.isCompleted));
     }
 
     const handleFilterChange = async (filter: FiltersTypes) => {
@@ -85,10 +86,12 @@ const TodoList: FC = memo(() => {
         TodoService.updateTodoIndex(originalIndex, newIndex);
         await fetchTodos();
     }
-    
+
     useEffect(() => {
         fetchTodos().catch(console.error);
     }, []);
+
+    console.log(loading);
 
     return (
         <>
@@ -112,21 +115,19 @@ const TodoList: FC = memo(() => {
                         <div className="actions">
                             <p className="left"><span id="count">{todos.length}</span> items left</p>
                             {size.width > 800 && <Filters onFilterChange={handleFilterChange}/>}
-                            <a className="clear-completed-btn" onClick={handleDeleteCompletedTodos}>
+                            <button className="link clear-completed-btn" onClick={handleDeleteCompletedTodos}>
                                 Clear Completed
-                            </a>
+                            </button>
                         </div>
-                        
+
                     </>
                 )}
-
-                {!todos && (
-                    <div>Loading ...</div>
+                {loading && (
+                    <div className='empty-todos-container'>Loading ...</div>
                 )}
-                {todos && todos.length === 0 && (
+                {!loading && todos.length === 0 && (
                     <div className='empty-todos-container'>No todos found</div>
                 )}
-
             </div>
             {size.width <= 800 && <Filters onFilterChange={handleFilterChange}/>}
         </>

@@ -1,4 +1,4 @@
-﻿import BaseService from './BaseService';
+import BaseService from './BaseService';
 import {CreateTodo, Todo} from '../model/Todo';
 import {FakeData} from '../data/FakeData';
 

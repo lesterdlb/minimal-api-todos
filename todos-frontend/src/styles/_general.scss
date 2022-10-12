@@ -1,4 +1,4 @@
-﻿* {
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -10,7 +10,7 @@ a, button {
     user-select: none;
 }
 
-a {
+a, .link {
     text-decoration: none;
     @include themed() {
         color: get-theme-value('text-secondary-color');
@@ -72,6 +72,11 @@ main {
     border-radius: 50%;
     background-color: transparent;
     @include flex-center();
+}
+
+.link {
+    border: none;
+    background-color: transparent;
 }
 
 .info {

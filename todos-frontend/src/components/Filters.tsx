@@ -1,4 +1,4 @@
-﻿import {useState} from 'react';
+import {useState} from 'react';
 import {FiltersTypes} from '../constants';
 
 interface FilterProps {
@@ -16,21 +16,21 @@ const Filters = ({onFilterChange}: FilterProps) => {
 
     return (
         <div className='filters'>
-            <a
-                className={`${selected === FiltersTypes.ALL ? className : ''}`}
+            <button
+                className={`link ${selected === FiltersTypes.ALL ? className : ''}`}
                 onClick={() => handleFilterChange(FiltersTypes.ALL)}>
                 All
-            </a>
-            <a
-                className={`${selected === FiltersTypes.ACTIVE ? className : ''}`}
+            </button>
+            <button
+                className={`link ${selected === FiltersTypes.ACTIVE ? className : ''}`}
                 onClick={() => handleFilterChange(FiltersTypes.ACTIVE)}>
                 Active
-            </a>
-            <a
-                className={`${selected === FiltersTypes.COMPLETED ? className : ''}`}
+            </button>
+            <button
+                className={`link ${selected === FiltersTypes.COMPLETED ? className : ''}`}
                 onClick={() => handleFilterChange(FiltersTypes.COMPLETED)}>
                 Completed
-            </a>
+            </button>
         </div>
     )
 }
