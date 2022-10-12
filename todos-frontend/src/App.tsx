@@ -1,40 +1,32 @@
-import {useEffect, useState} from 'react';
-import './App.css';
-import TodoService from "./services/TodoService";
-import Todo from "./model/Todo";
+import {DndProvider} from 'react-dnd';
+import {HTML5Backend} from 'react-dnd-html5-backend';
+
+// Style
+import './styles/App.scss';
+
+// Components
+import Header from './components/Header';
 import TodoList from "./components/TodoList";
-import AddTodo from "./components/AddTodo";
+
+import ThemeProvider from './contexts/ThemeProvider';
 
 const App = () => {
-    const [todos, setTodos] = useState<Todo[]>([]);
-
-    const handleAddTodo = async (title: string) => {
-        const response = await TodoService.createTodo({
-            id: '', title, isCompleted: false
-        });
-        setTodos([...todos, response]);
-    }
-    
-    const handleDeleteTodo = async (id: string) => {
-        await TodoService.deleteTodo(id);
-        setTodos(todos.filter(todo => todo.id !== id));
-    }
-
-    const fetchTodos = async () => {
-        const response = await TodoService.getTodos();
-        setTodos(response);
-    }
-
-    useEffect(() => {
-        fetchTodos().catch(console.error);
-    }, []);
-
     return (
-        <div className="App">
-            <h1>Todos</h1>
-            <AddTodo onAddTodo={handleAddTodo}/>
-            <TodoList todos={todos} onDeleteTodo={handleDeleteTodo}/>
-        </div>
+        <>
+            <ThemeProvider>
+                <main>
+                    <div className="container">
+                        <section className="wrapper">
+                            <Header/>
+                            <DndProvider backend={HTML5Backend}>
+                                <TodoList/>
+                            </DndProvider>
+                            <p className="info">Drag and drop to reorder list</p>
+                        </section>
+                    </div>
+                </main>
+            </ThemeProvider>
+        </>
     );
 }
 

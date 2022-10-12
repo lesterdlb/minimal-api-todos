@@ -17,10 +17,14 @@ const AddTodo = ({onAddTodo}: AddTodoProps) => {
     return (
         <>
             <form onSubmit={handleSubmit}>
-                <span className="round"></span>
+                <label className="checkbox-label">
+                    <input type="checkbox"/>
+                    <span className="checkbox-round"/>
+                </label>
                 <input type="text" id="todo-input" placeholder="Create a new todo..."
+                       className='todo-input' autoComplete='off'
                        value={title} onChange={event => setTitle(event.target.value)}/>
-                <button type='submit' className="add-todo">+</button>
+                <button type='submit' className="btn add-todo">+</button>
             </form>
         </>
     );

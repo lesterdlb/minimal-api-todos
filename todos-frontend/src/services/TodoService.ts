@@ -1,32 +1,43 @@
-﻿import axios from 'axios';
-import Todo from '../model/Todo';
+﻿import BaseService from './BaseService';
+import LocalTodoService from './LocalTodoService';
+import ApiTodoService from './ApiTodoService';
+import {CreateTodo, Todo} from '../model/Todo';
+import {ServiceTypes} from '../constants';
 
-const BASE_URL = 'http://localhost:11518/api/';
+class TodoService implements BaseService {
+    private service: BaseService;
 
-class TodoService {
-    http = axios.create({
-        baseURL: BASE_URL
-    });
-
-    async getTodos() {
-        const response = await this.http.get<Todo[]>('/todos');
-        return response.data;
+    constructor(serviceType: string) {
+        if (serviceType === ServiceTypes.Api) {
+            this.service = ApiTodoService;
+        } else {
+            this.service = LocalTodoService;
+        }
     }
 
-    async createTodo(todo: Todo) {
-        const response = await this.http.post<Todo>('/todos', todo);
-        return response.data;
+    getTodos(completed?: boolean): Promise<Todo[]> {
+        return this.service.getTodos(completed);
     }
 
-    async updateTodo(todo: Todo) {
-        const response = await this.http.put<Todo>('/todos', todo);
-        return response.data;
+    addTodo(todo: CreateTodo): Promise<Todo> {
+        return this.service.addTodo(todo);
     }
 
-    async deleteTodo(id: string) {
-        const response = await this.http.delete<Todo>(`/todos/${id}`);
-        return response.data;
+    updateTodoStatus(id: string): void {
+        this.service.updateTodoStatus(id);
+    }
+
+    updateTodoIndex(originalIndex: number, newIndex: number): void {
+        this.service.updateTodoIndex(originalIndex, newIndex);
+    }
+
+    deleteTodo(id: string): void {
+        this.service.deleteTodo(id);
+    }
+
+    deleteCompletedTodos(): void {
+        this.service.deleteCompletedTodos();
     }
 }
 
-export default new TodoService();
+export default new TodoService(process.env.REACT_APP_SERVICE_TYPE || ServiceTypes.Local);
