@@ -2,7 +2,8 @@
 
 public class Todo
 {
-    public Guid Id { get; set; }
-    public string Title { get; set; } = null!;
+    public Guid Id { get; init; }
+    public string Title { get; init; } = null!;
     public bool IsCompleted { get; set; }
+    public int Index { get; set; }
 }

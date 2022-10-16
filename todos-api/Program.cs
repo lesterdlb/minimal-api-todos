@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using todos_api;
 using todos_api.Context;
 using todos_api.Contracts;
 using todos_api.Services;
@@ -23,11 +24,26 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.MapGet("/api/todos", async (ITodoService service) =>
-    await service.GetTodos());
+Data.AddTodoData(app);
+
+app.MapGet("/api/todos", async (ITodoService service, bool? completed) =>
+{
+    var response = await service.GetTodos(completed);
+    return response;
+});
 
 app.MapPost("/api/todos", async (ITodoService service, TodoRequest todo) =>
     await service.CreateTodo(todo));
+
+app.MapPut("/api/todos/{id}/status", async (ITodoService service, Guid id) =>
+    await service.UpdateTodoStatus(id));
+
+app.MapPut("/api/todos/{originalIndex}/{newIndex}/index",
+    async (ITodoService service, int originalIndex, int newIndex) =>
+        await service.UpdateTodoIndex(originalIndex, newIndex));
+
+app.MapDelete("api/todos", async (ITodoService service) =>
+    await service.DeleteCompletedTodos());
 
 app.MapDelete("api/todos/{id}", async (ITodoService service, Guid id) =>
     await service.DeleteTodo(id));
