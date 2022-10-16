@@ -68,7 +68,8 @@ const TodoItem: FC<TodoItemProps> = memo((
                 <span className="checkbox-round"/>
             </label>
             <li className={`todo ${todo.isCompleted ? 'completed' : ''}`}>
-                {`${todo.title} - ${todo.index}`}</li>
+                {todo.title}
+            </li>
             <button className="btn" onClick={() => onDeleteTodo(todo.id)}>
                 <Cross/>
             </button>

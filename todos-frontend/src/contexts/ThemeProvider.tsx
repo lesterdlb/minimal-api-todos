@@ -18,7 +18,8 @@ const ThemeProvider = ({children}: ThemeProviderProps) => {
     }, [localStorage]);
 
     useEffect(() => {
-        localStorage.setItem(LOCAL_STORAGE_KEY, theme);
+        if (theme)
+            localStorage.setItem(LOCAL_STORAGE_KEY, theme);
     }, [theme, localStorage]);
 
     return (

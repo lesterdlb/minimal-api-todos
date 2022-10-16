@@ -7,8 +7,8 @@ class ApiTodoService implements BaseService {
         baseURL: process.env.REACT_APP_API_URL
     });
 
-    async getTodos() {
-        const response = await this.http.get<Todo[]>('/todos');
+    async getTodos(completed?: boolean) {
+        const response = await this.http.get<Todo[]>('/todos', {params: {completed}});
         return response.data;
     }
 
@@ -18,20 +18,19 @@ class ApiTodoService implements BaseService {
     }
 
     async updateTodoStatus(id: string) {
-        const response = await this.http.put<Todo>('/todos', {id});
+        const response = await this.http.put<Todo>(`/todos/${id}/status`);
         return response.data;
     }
 
-    updateTodoIndex(originalIndex: number, newIndex: number): void {
-        console.log('updateTodoIndex', originalIndex, newIndex);
-        throw new Error('Method not implemented.');
+    async updateTodoIndex(originalIndex: number, newIndex: number): Promise<void> {
+        await this.http.put<Todo>(`/todos/${originalIndex}/${newIndex}/index`);
     }
 
     async deleteTodo(id: string) {
         const response = await this.http.delete<Todo>(`/todos/${id}`);
         return response.data;
     }
-    
+
     async deleteCompletedTodos() {
         const response = await this.http.delete<Todo>('/todos');
         return response.data;

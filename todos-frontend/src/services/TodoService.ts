@@ -8,35 +8,33 @@ class TodoService implements BaseService {
     private service: BaseService;
 
     constructor(serviceType: string) {
-        if (serviceType === ServiceTypes.Api) {
-            this.service = ApiTodoService;
-        } else {
-            this.service = LocalTodoService;
-        }
+        this.service = serviceType === ServiceTypes.Api
+            ? ApiTodoService
+            : LocalTodoService;
     }
 
-    getTodos(completed?: boolean): Promise<Todo[]> {
-        return this.service.getTodos(completed);
+    async getTodos(completed?: boolean): Promise<Todo[]> {
+        return await this.service.getTodos(completed);
     }
 
-    addTodo(todo: CreateTodo): Promise<Todo> {
-        return this.service.addTodo(todo);
+    async addTodo(todo: CreateTodo): Promise<Todo> {
+        return await this.service.addTodo(todo);
     }
 
-    updateTodoStatus(id: string): void {
-        this.service.updateTodoStatus(id);
+    async updateTodoStatus(id: string): Promise<void> {
+        await this.service.updateTodoStatus(id);
     }
 
-    updateTodoIndex(originalIndex: number, newIndex: number): void {
-        this.service.updateTodoIndex(originalIndex, newIndex);
+    async updateTodoIndex(originalIndex: number, newIndex: number): Promise<void> {
+        await this.service.updateTodoIndex(originalIndex, newIndex);
     }
 
-    deleteTodo(id: string): void {
+    async deleteTodo(id: string): Promise<void> {
         this.service.deleteTodo(id);
     }
 
-    deleteCompletedTodos(): void {
-        this.service.deleteCompletedTodos();
+    async deleteCompletedTodos(): Promise<void> {
+        await this.service.deleteCompletedTodos();
     }
 }
 

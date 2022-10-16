@@ -19,6 +19,7 @@ const TodoList: FC = memo(() => {
     const [loading, setLoading] = useState<boolean>(false);
     const [, drop] = useDrop(() => ({accept: ItemTypes.TODO}));
     const size = useWindowSize();
+    const [activeFilter, setActiveFilter] = useState<FiltersTypes>(FiltersTypes.ALL);
 
     const fetchTodos = async (completed?: boolean) => {
         setLoading(true);
@@ -26,7 +27,7 @@ const TodoList: FC = memo(() => {
         setTodos(response);
         setLoading(false);
     }
-    
+
     // Drag and Drop Functions
     const findTodo = useCallback((id: string) => {
             const todo = todos.filter(t => t.id === id)[0]
@@ -69,6 +70,7 @@ const TodoList: FC = memo(() => {
     }
 
     const handleFilterChange = async (filter: FiltersTypes) => {
+        setActiveFilter(filter);
         switch (filter) {
             case FiltersTypes.ALL:
                 await fetchTodos();
@@ -83,7 +85,7 @@ const TodoList: FC = memo(() => {
     }
 
     const handleUpdateTodoIndex = async (originalIndex: number, newIndex: number) => {
-        TodoService.updateTodoIndex(originalIndex, newIndex);
+        await TodoService.updateTodoIndex(originalIndex, newIndex);
         await fetchTodos();
     }
 
@@ -91,13 +93,17 @@ const TodoList: FC = memo(() => {
         fetchTodos().catch(console.error);
     }, []);
 
-    console.log(loading);
-
     return (
         <>
             <AddTodo onAddTodo={handleAddTodo}/>
             <div className="todos-container">
-                {todos && (
+                {loading && (
+                    <div className='empty-todos-container'>Loading ...</div>
+                )}
+                {!loading && todos.length === 0 && (
+                    <div className='empty-todos-container'>No todos found</div>
+                )}
+                {!loading && todos && (
                     <>
                         <ul className="todos" ref={drop}>
                             {todos.map(todo =>
@@ -114,22 +120,24 @@ const TodoList: FC = memo(() => {
                         </ul>
                         <div className="actions">
                             <p className="left"><span id="count">{todos.length}</span> items left</p>
-                            {size.width > 800 && <Filters onFilterChange={handleFilterChange}/>}
+                            {
+                                size.width > 800
+                                    ? <Filters activeFilter={activeFilter} onFilterChange={handleFilterChange}/>
+                                    : null
+                            }
                             <button className="link clear-completed-btn" onClick={handleDeleteCompletedTodos}>
                                 Clear Completed
                             </button>
                         </div>
-
                     </>
                 )}
-                {loading && (
-                    <div className='empty-todos-container'>Loading ...</div>
-                )}
-                {!loading && todos.length === 0 && (
-                    <div className='empty-todos-container'>No todos found</div>
-                )}
+
             </div>
-            {size.width <= 800 && <Filters onFilterChange={handleFilterChange}/>}
+            {
+                size.width <= 800
+                    ? <Filters activeFilter={activeFilter} onFilterChange={handleFilterChange}/>
+                    : null
+            }
         </>
     );
 });
