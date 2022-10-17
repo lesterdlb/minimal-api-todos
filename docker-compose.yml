@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  todos-api:
+    container_name: todos-api
+    build:
+      context: .
+      dockerfile: ./docker/dotnet/Dockerfile
+    ports:
+      - '8081:80'
+    networks:
+      - network
+
+  todos-frontend:
+    container_name: todos-frontend
+    depends_on:
+      - todos-api
+    build:
+      context: .
+      dockerfile: ./docker/node/Dockerfile
+    ports:
+      - '3000:80'
+    volumes:
+      - ./todos-frontend:/app
+    networks:
+      - network
+
+networks:
+  network:
+    external: true
