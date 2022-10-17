@@ -4,6 +4,13 @@ WORKDIR /usr/src/app
 COPY /todos-frontend/package*.json /todos-frontend/yarn.lock ./
 RUN yarn
 COPY /todos-frontend .
+
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL $REACT_APP_API_URL
+
+ARG REACT_APP_SERVICE_TYPE
+ENV REACT_APP_SERVICE_TYPE $REACT_APP_SERVICE_TYPE
+
 RUN yarn build
 
 FROM nginx:1.23.0-alpine

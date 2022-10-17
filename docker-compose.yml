@@ -18,6 +18,9 @@ services:
     build:
       context: .
       dockerfile: ./docker/node/Dockerfile
+      args:
+        - REACT_APP_API_URL=http://localhost:8081/api
+        - REACT_APP_SERVICE_TYPE=api
     ports:
       - '3000:80'
     volumes:
