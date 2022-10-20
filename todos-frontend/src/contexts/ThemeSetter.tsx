@@ -8,7 +8,7 @@ const ThemeSetter = () => {
 
     return (
         <button
-            className='btn btn-switch-theme'
+            className='btn btn-switch-theme' title='Switch theme'
             onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
             {theme === 'light' ? <Moon/> : <Sun/>}
         </button>

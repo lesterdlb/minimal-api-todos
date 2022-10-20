@@ -60,20 +60,20 @@ const TodoItem: FC<TodoItemProps> = memo((
     const opacity = isDragging ? 0 : 1;
 
     return (
-        <div ref={node => drag(drop(node))} className='todo-item' style={{opacity}}>
+        <li ref={node => drag(drop(node))} className='todo-item' style={{opacity}}>
             <label className="checkbox-label">
-                <input type="checkbox"
+                <input type="checkbox" title='Change status' aria-label="Checkbox Change status"
                        defaultChecked={todo.isCompleted}
                        onChange={() => onStatusChange(todo.id)}/>
                 <span className="checkbox-round"/>
             </label>
-            <li className={`todo ${todo.isCompleted ? 'completed' : ''}`}>
+            <div className={`todo ${todo.isCompleted ? 'completed' : ''}`}>
                 {todo.title}
-            </li>
-            <button className="btn" onClick={() => onDeleteTodo(todo.id)}>
+            </div>
+            <button className="btn" title='Delete Todo' onClick={() => onDeleteTodo(todo.id)}>
                 <Cross/>
             </button>
-        </div>
+        </li>
     );
 });
 
