@@ -1,8 +1,7 @@
 {
   "files": {
     "main.css": "/minimal-api-todos/static/css/main.b2bba5c9.css",
-    "main.js": "/minimal-api-todos/static/js/main.e08f6446.js",
-    "static/js/787.e31929f2.chunk.js": "/minimal-api-todos/static/js/787.e31929f2.chunk.js",
+    "main.js": "/minimal-api-todos/static/js/main.dd0b648e.js",
     "static/media/bg-desktop-light.jpg": "/minimal-api-todos/static/media/bg-desktop-light.3508d620efd5a52bb4ce.jpg",
     "static/media/bg-desktop-dark.jpg": "/minimal-api-todos/static/media/bg-desktop-dark.73e47dbb723ebc772ef0.jpg",
     "static/media/icon-sun.svg": "/minimal-api-todos/static/media/icon-sun.910b1f9a23741afc341e95653a51f14f.svg",
@@ -11,11 +10,10 @@
     "static/media/icon-cross.svg": "/minimal-api-todos/static/media/icon-cross.6ee81d30b75cab19d6f7314624fcc4d6.svg",
     "static/media/icon-check.svg": "/minimal-api-todos/static/media/icon-check.a8fb15d0278c8e312df5.svg",
     "main.b2bba5c9.css.map": "/minimal-api-todos/static/css/main.b2bba5c9.css.map",
-    "main.e08f6446.js.map": "/minimal-api-todos/static/js/main.e08f6446.js.map",
-    "787.e31929f2.chunk.js.map": "/minimal-api-todos/static/js/787.e31929f2.chunk.js.map"
+    "main.dd0b648e.js.map": "/minimal-api-todos/static/js/main.dd0b648e.js.map"
   },
   "entrypoints": [
     "static/css/main.b2bba5c9.css",
-    "static/js/main.e08f6446.js"
+    "static/js/main.dd0b648e.js"
   ]
 }
