@@ -4,22 +4,22 @@
   "homepage": "https://lesterdlb.github.io/minimal-api-todos",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.11.63",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^15.0.4",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.12.7",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
-    "axios": "^0.27.2",
+    "axios": "^1.6.8",
     "react": "^18.2.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "sass": "^1.55.0",
-    "typescript": "^4.8.4",
-    "web-vitals": "^2.1.4"
+    "typescript": "^5.4.5",
+    "web-vitals": "^3.5.2"
   },
   "scripts": {
     "predeploy": "yarn run build",
@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "eslint-config-react-app": "^7.0.1",
-    "gh-pages": "^5.0.0",
-    "jest-editor-support": "^30.2.0"
+    "gh-pages": "^6.1.1",
+    "jest-editor-support": "^32.0.0-beta.0"
   }
 }
