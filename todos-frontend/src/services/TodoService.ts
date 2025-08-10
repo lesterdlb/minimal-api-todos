@@ -38,4 +38,4 @@ class TodoService implements BaseService {
     }
 }
 
-export default new TodoService(process.env.REACT_APP_SERVICE_TYPE || ServiceTypes.Local);
+export default new TodoService(import.meta.env.VITE_SERVICE_TYPE || ServiceTypes.Local);

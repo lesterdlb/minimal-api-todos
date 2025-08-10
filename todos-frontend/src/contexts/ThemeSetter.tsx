@@ -1,7 +1,7 @@
 import {useContext} from "react";
 import ThemeContext from "./ThemeContext";
-import {ReactComponent as Sun} from '../images/icon-sun.svg';
-import {ReactComponent as Moon} from '../images/icon-moon.svg';
+import Sun from '../images/icon-sun.svg?react';
+import Moon from '../images/icon-moon.svg?react';
 
 const ThemeSetter = () => {
     const {theme, setTheme} = useContext(ThemeContext);

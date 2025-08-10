@@ -3,12 +3,7 @@ using todos_api.Models;
 
 namespace todos_api.Context;
 
-public class ApiContext : DbContext
+public class ApiContext(DbContextOptions<ApiContext> options) : DbContext(options)
 {
-    public DbSet<Todo> Todos { get; set; } = null!;
-
-    public ApiContext(DbContextOptions<ApiContext> options)
-        : base(options)
-    {
-    }
+    public DbSet<Todo> Todos { get; set; }
 }

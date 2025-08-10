@@ -1,6 +1,6 @@
 import {FC, memo} from 'react';
 import {useDrag, useDrop} from 'react-dnd';
-import {ReactComponent as Cross} from '../images/icon-cross.svg';
+import Cross from '../images/icon-cross.svg?react';
 import {Todo} from '../model/Todo';
 import {ItemTypes} from '../constants';
 
@@ -72,6 +72,7 @@ const TodoItem: FC<TodoItemProps> = memo((
             </div>
             <button className="btn" title='Delete Todo' onClick={() => onDeleteTodo(todo.id)}>
                 <Cross/>
+                {/*'C'*/}
             </button>
         </li>
     );

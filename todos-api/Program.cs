@@ -8,6 +8,9 @@ const string allowSpecificOrigins = "_allowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddDbContext<ApiContext>(opt =>
     opt.UseInMemoryDatabase("api"));
 builder.Services.AddScoped<ITodoService, TodoService>();
@@ -24,6 +27,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"); });
+}
+
 Data.AddTodoData(app);
 
 app.MapGet("/api/todos", async (ITodoService service, bool? completed) =>
@@ -35,18 +44,19 @@ app.MapGet("/api/todos", async (ITodoService service, bool? completed) =>
 app.MapPost("/api/todos", async (ITodoService service, TodoRequest todo) =>
     await service.CreateTodo(todo));
 
-app.MapPut("/api/todos/{id}/status", async (ITodoService service, Guid id) =>
+app.MapPut("/api/todos/{id:guid}/status", async (ITodoService service, Guid id) =>
     await service.UpdateTodoStatus(id));
 
-app.MapPut("/api/todos/{originalIndex}/{newIndex}/index",
+app.MapPut("/api/todos/{originalIndex:int}/{newIndex:int}/index",
     async (ITodoService service, int originalIndex, int newIndex) =>
         await service.UpdateTodoIndex(originalIndex, newIndex));
 
 app.MapDelete("api/todos", async (ITodoService service) =>
     await service.DeleteCompletedTodos());
 
-app.MapDelete("api/todos/{id}", async (ITodoService service, Guid id) =>
+app.MapDelete("api/todos/{id:guid}", async (ITodoService service, Guid id) =>
     await service.DeleteTodo(id));
 
 app.UseCors(allowSpecificOrigins);
-app.Run();
+
+await app.RunAsync();
