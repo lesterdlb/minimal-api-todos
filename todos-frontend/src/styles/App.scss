@@ -1,15 +1,8 @@
-@import-normalize;
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;700&display=swap');
-
-@import './variables';
-@import './themes';
-@import './mixins';
-
 // General styles
-@import './general';
+@use 'general';
 
 // Components
-@import './components/header';
-@import './components/add-todo';
-@import './components/todo-list';
-@import './components/filters';
+@use 'components/header';
+@use 'components/add-todo';
+@use 'components/todo-list';
+@use 'components/filters';

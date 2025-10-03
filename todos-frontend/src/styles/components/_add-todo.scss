@@ -1,43 +1,47 @@
+@use '../variables' as *;
+@use '../themes' as *;
+@use '../mixins' as *;
+
 form {
-    @include flex-box(space-evenly);
-    @include themed() {
-        color: get-theme-value('bg-secondary-color');
-    }
-    height: $height;
-    padding: 0.5rem 0.5rem 0.5rem 1rem;
+	@include flex-box(space-evenly);
+	@include themed() {
+		color: get-theme-value('bg-secondary-color');
+	}
+	height: $height;
+	padding: 0.5rem 0.5rem 0.5rem 1rem;
 
-    > .btn {
-        @include themed() {
-            color: get-theme-value('plus-icon-color');
-        }
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: inherit;
-        font-size: 2.0rem;
+	> .btn {
+		@include themed() {
+			color: get-theme-value('plus-icon-color');
+		}
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background-color: inherit;
+		font-size: 2rem;
 
-        img {
-            width: 25px;
-        }
-    }
+		img {
+			width: 25px;
+		}
+	}
 }
 
 .todo-input {
-    @include themed() {
-        background-color: get-theme-value('bg-secondary-color');
-        color: get-theme-value('text-primary-color');
-    }
-    flex: auto;
-    height: $height;
-    border: none;
-    font-size: 1rem;
-    padding: 0 0.5rem;
-    outline: none;
-    width: 100%;
+	@include themed() {
+		background-color: get-theme-value('bg-secondary-color');
+		color: get-theme-value('text-primary-color');
+	}
+	flex: auto;
+	height: $height;
+	border: none;
+	font-size: 1rem;
+	padding: 0 0.5rem;
+	outline: none;
+	width: 100%;
 
-    &:active {
-        @include themed() {
-            background-color: get-theme-value('bg-secondary-color');
-        }
-    }
+	&:active {
+		@include themed() {
+			background-color: get-theme-value('bg-secondary-color');
+		}
+	}
 }

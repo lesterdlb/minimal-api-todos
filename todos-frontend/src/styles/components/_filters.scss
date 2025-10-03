@@ -1,11 +1,14 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
 .filters {
-    @include flex-box();
-    height: $height;
-    padding: 0 4rem;
-    font-size: 0.9rem;
-    font-weight: $font-bold;
-    
-    .active-filter {
-        color: $primary-color !important;
-    }
+	@include flex-box();
+	height: $height;
+	padding: 0 4rem;
+	font-size: 0.9rem;
+	font-weight: $font-bold;
+
+	.active-filter {
+		color: $primary-color !important;
+	}
 }

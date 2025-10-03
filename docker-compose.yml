@@ -1,33 +1,33 @@
 version: '3'
 
 services:
-  todos-api:
-    container_name: todos-api
-    build:
-      context: .
-      dockerfile: ./docker/dotnet/Dockerfile
-    ports:
-      - '8081:80'
-    networks:
-      - network
+    todos-api:
+        container_name: todos-api
+        build:
+            context: .
+            dockerfile: ./docker/dotnet/Dockerfile
+        ports:
+            - '8081:80'
+        networks:
+            - network
 
-  todos-frontend:
-    container_name: todos-frontend
-    depends_on:
-      - todos-api
-    build:
-      context: .
-      dockerfile: ./docker/node/Dockerfile
-      args:
-        - VITE_API_URL=http://localhost:8081/api
-        - VITE_SERVICE_TYPE=api
-    ports:
-      - '3000:80'
-    volumes:
-      - ./todos-frontend:/app
-    networks:
-      - network
+    todos-frontend:
+        container_name: todos-frontend
+        depends_on:
+            - todos-api
+        build:
+            context: .
+            dockerfile: ./docker/node/Dockerfile
+            args:
+                - VITE_API_URL=http://localhost:8081/api
+                - VITE_SERVICE_TYPE=api
+        ports:
+            - '3000:80'
+        volumes:
+            - ./todos-frontend:/app
+        networks:
+            - network
 
 networks:
-  network:
-    external: true
+    network:
+        external: true

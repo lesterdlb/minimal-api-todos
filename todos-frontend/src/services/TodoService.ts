@@ -28,7 +28,7 @@ class TodoService implements BaseService {
 	}
 
 	async deleteTodo(id: string): Promise<void> {
-		this.service.deleteTodo(id);
+		await this.service.deleteTodo(id);
 	}
 
 	async deleteCompletedTodos(): Promise<void> {

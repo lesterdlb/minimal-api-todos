@@ -1,34 +1,31 @@
-import {useState, useEffect} from "react";
-import ThemeContext, {initialThemeState} from "./ThemeContext";
+import { useState, useEffect, JSX } from 'react';
+import ThemeContext, { initialThemeState } from './ThemeContext';
 
 interface ThemeProviderProps {
-    children: JSX.Element,
+	children: JSX.Element;
 }
 
-const LOCAL_STORAGE_KEY = "todoAppTheme";
+const LOCAL_STORAGE_KEY = 'todoAppTheme';
 
-const ThemeProvider = ({children}: ThemeProviderProps) => {
-    const [theme, setTheme] = useState('');
-    const localStorage = window.localStorage;
+const ThemeProvider = ({ children }: ThemeProviderProps) => {
+	const [theme, setTheme] = useState('');
 
-    useEffect(() => {
-        const savedThemeLocal = localStorage.getItem(LOCAL_STORAGE_KEY);
+	useEffect(() => {
+		const savedThemeLocal = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+		setTheme(savedThemeLocal || initialThemeState.theme);
+	}, []);
 
-        !!savedThemeLocal ? setTheme(savedThemeLocal) : setTheme(initialThemeState.theme);
-    }, [localStorage]);
+	useEffect(() => {
+		if (theme) {
+			window.localStorage.setItem(LOCAL_STORAGE_KEY, theme);
+		}
+	}, [theme]);
 
-    useEffect(() => {
-        if (theme)
-            localStorage.setItem(LOCAL_STORAGE_KEY, theme);
-    }, [theme, localStorage]);
-
-    return (
-        <ThemeContext.Provider value={{theme, setTheme}}>
-            <div className={`theme--${theme}`}>
-                {children}
-            </div>
-        </ThemeContext.Provider>
-    );
-}
+	return (
+		<ThemeContext.Provider value={{ theme, setTheme }}>
+			<div className={`theme--${theme}`}>{children}</div>
+		</ThemeContext.Provider>
+	);
+};
 
 export default ThemeProvider;

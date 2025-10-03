@@ -1,33 +1,55 @@
-import {useRef} from 'react';
+import { useRef } from 'react';
 
 interface AddTodoProps {
-    onAddTodo: (title: string) => void;
+	onAddTodo: (title: string) => void;
 }
 
-const AddTodo = ({onAddTodo}: AddTodoProps) => {
-    const titleInputRef = useRef<HTMLInputElement>(null);
+const AddTodo = ({ onAddTodo }: AddTodoProps) => {
+	const titleInputRef = useRef<HTMLInputElement>(null);
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        if (!titleInputRef.current?.value) return;
-        onAddTodo(titleInputRef.current?.value);
-        titleInputRef.current.value = '';
-    }
+	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		const value = titleInputRef.current?.value.trim();
 
-    return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <label className="checkbox-label">
-                    <input type="checkbox" aria-label="Checkbox Add Todo"/>
-                    <span className="checkbox-round"/>
-                </label>
-                <input type="text" id="todo-input" placeholder="Create a new todo..."
-                       className='todo-input' autoComplete='off'
-                       ref={titleInputRef}/>
-                <button type='submit' title='Add Todo' className="btn add-todo">+</button>
-            </form>
-        </>
-    );
-}
+		if (!value) {
+			alert('Please enter a title for the todo');
+			return;
+		}
+
+		if (value.length < 3) {
+			alert('Title must be at least 3 characters long');
+			return;
+		}
+
+		onAddTodo(value);
+		if (titleInputRef.current) {
+			titleInputRef.current.value = '';
+		}
+	};
+
+	return (
+		<form onSubmit={handleSubmit}>
+			<input
+				type='text'
+				id='todo-input'
+				placeholder='Create a new todo...'
+				className='todo-input'
+				autoComplete='off'
+				ref={titleInputRef}
+				required
+				minLength={3}
+				aria-label='New todo'
+			/>
+			<button
+				type='submit'
+				title='Add Todo'
+				className='btn add-todo'
+				aria-label='Add todo'
+			>
+				+
+			</button>
+		</form>
+	);
+};
 
 export default AddTodo;

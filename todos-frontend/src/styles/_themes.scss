@@ -1,47 +1,53 @@
+@use 'sass:map';
 $theme-map: ();
 $themes: (
-        dark: (
-                bg-primary-color: #161722,
-                bg-secondary-color: #25273c,
-                text-primary-color: #bababa,
-                text-secondary-color: #777a92,
-                active-color: #cacde8,
-                hover-color: #e4e5f1,
-                plus-icon-color: #ffffff,
-                check-icon-color: #4d5066,
-                shadow-color: hsla(0, 0%, 7%, 0.87),
-                bg-desktop-image: url(../images/bg-desktop-dark.jpg),
-                bg-mobile-image: url(../images/bg-mobile-dark.jpg),
-        ),
-        light: (
-                bg-primary-color: #fafafa,
-                bg-secondary-color: #ffffff,
-                text-primary-color: #484b6a,
-                text-secondary-color: #777a92,
-                active-color: #e4e5f1,
-                hover-color: #e4e5f1,
-                plus-icon-color: #d2d3db,
-                check-icon-color: #4d5066,
-                shadow-color: hsla(0, 0%, 0%, 0.1),
-                bg-desktop-image: url(../images/bg-desktop-light.jpg),
-                bg-mobile-image: url(../images/bg-mobile-light.jpg),
-        ),
+	dark: (
+		bg-primary-color: #161722,
+		bg-secondary-color: #25273c,
+		text-primary-color: #bababa,
+		text-secondary-color: #777a92,
+		active-color: #cacde8,
+		hover-color: #e4e5f1,
+		plus-icon-color: #ffffff,
+		check-icon-color: #4d5066,
+		shadow-color: hsla(0, 0%, 7%, 0.87),
+		bg-desktop-image: url(../images/bg-desktop-dark.jpg),
+		bg-mobile-image: url(../images/bg-mobile-dark.jpg),
+	),
+	light: (
+		bg-primary-color: #fafafa,
+		bg-secondary-color: #ffffff,
+		text-primary-color: #484b6a,
+		text-secondary-color: #777a92,
+		active-color: #e4e5f1,
+		hover-color: #e4e5f1,
+		plus-icon-color: #d2d3db,
+		check-icon-color: #4d5066,
+		shadow-color: hsla(0, 0%, 0%, 0.1),
+		bg-desktop-image: url(../images/bg-desktop-light.jpg),
+		bg-mobile-image: url(../images/bg-mobile-light.jpg),
+	),
 );
 
 @mixin themed() {
-    @each $theme, $map in $themes {
-        .theme--#{$theme} & {
-            $theme-map: () !global;
-            @each $key, $sub-map in $map {
-                $value: map-get(map-get($themes, $theme), '#{$key}');
-                $theme-map: map-merge($theme-map, ($key: $value)) !global;
-            }
-            @content;
-            $theme-map: null !global;
-        }
-    }
+	@each $theme, $map in $themes {
+		.theme--#{$theme} & {
+			$theme-map: () !global;
+			@each $key, $sub-map in $map {
+				$value: map.get(map.get($themes, $theme), '#{$key}');
+				$theme-map: map.merge(
+					$theme-map,
+					(
+						$key: $value,
+					)
+				) !global;
+			}
+			@content;
+			$theme-map: null !global;
+		}
+	}
 }
 
 @function get-theme-value($key) {
-    @return map-get($theme-map, $key);
+	@return map.get($theme-map, $key);
 }

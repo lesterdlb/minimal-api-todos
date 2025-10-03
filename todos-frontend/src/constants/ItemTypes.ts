@@ -1,3 +1,3 @@
 export enum ItemTypes {
-    TODO = 'todo'
+	TODO = 'todo',
 }

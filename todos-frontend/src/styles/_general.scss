@@ -1,118 +1,124 @@
+@use 'variables' as *;
+@use 'themes' as *;
+@use 'mixins' as *;
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: $font-family;
-    font-size: $normal-font-size;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: $font-family;
+	font-size: $normal-font-size;
 }
 
-a, button {
-    user-select: none;
+a,
+button {
+	user-select: none;
 }
 
-a, .link {
-    text-decoration: none;
-    @include themed() {
-        color: get-theme-value('text-secondary-color');
-    }
+a,
+.link {
+	text-decoration: none;
+	@include themed() {
+		color: get-theme-value('text-secondary-color');
+	}
 
-    &:hover {
-        @include themed() {
-            color: get-theme-value('hover-color');
-        }
-    }
+	&:hover {
+		@include themed() {
+			color: get-theme-value('hover-color');
+		}
+	}
 }
 
 button {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 main {
-    width: 100%;
-    min-height: 100vh;
-    background-repeat: no-repeat;
-    background-position: top center;
-    background-size: contain;
-    @include themed() {
-        color: get-theme-value('text-primary-color');
-        background-color: get-theme-value('bg-primary-color');
-        background-image: get-theme-value('bg-mobile-image');
-    }
+	width: 100%;
+	min-height: 100vh;
+	background-repeat: no-repeat;
+	background-position: top center;
+	background-size: contain;
+	@include themed() {
+		color: get-theme-value('text-primary-color');
+		background-color: get-theme-value('bg-primary-color');
+		background-image: get-theme-value('bg-mobile-image');
+	}
 }
 
 .container {
-    width: inherit;
-    min-height: inherit;
-    @include flex-center();
+	width: inherit;
+	min-height: inherit;
+	@include flex-center();
 }
 
 .wrapper {
-    width: 90vw;
-    min-height: 90vh;
-    display: flex;
-    @include flex-box(flex-start, column);
+	width: 90vw;
+	min-height: 90vh;
+	display: flex;
+	@include flex-box(flex-start, column);
 
-    > * {
-        width: 100%;
-        border-radius: $border-radius;
-        margin-bottom: 0.9rem;
-    }
+	> * {
+		width: 100%;
+		border-radius: $border-radius;
+		margin-bottom: 0.9rem;
+	}
 
-    > *:not(header):not(p) {
-        @include themed() {
-            background-color: get-theme-value('bg-secondary-color');
-        }
-    }
+	> *:not(header):not(p) {
+		@include themed() {
+			background-color: get-theme-value('bg-secondary-color');
+		}
+	}
 }
 
 .btn {
-    border: none;
-    width: $button-height;
-    height: $button-height;
-    border-radius: 50%;
-    background-color: transparent;
-    @include flex-center();
+	border: none;
+	width: $button-height;
+	height: $button-height;
+	border-radius: 50%;
+	background-color: transparent;
+	@include flex-center();
 }
 
 .link {
-    border: none;
-    background-color: transparent;
+	border: none;
+	background-color: transparent;
 }
 
 .info {
-    margin-top: 2rem;
-    text-align: center;
-    opacity: 0.7;
-    @include themed() {
-        color: get-theme-value('text-secondary-color');
-    }
+	margin-top: 2rem;
+	text-align: center;
+	opacity: 0.7;
+	@include themed() {
+		color: get-theme-value('text-secondary-color');
+	}
 }
 
 @media all and (min-width: 800px) {
-    main {
-        @include themed() {
-            background-image: get-theme-value('bg-desktop-image');
-        }
-    }
-    
-    .wrapper {
-        max-width: 650px;
-        min-height: 80vh;
-    }
-    
-    .filters {
-        flex: 1;
-    }
-    
-    .todo-item {
-        > .btn {
-           opacity: 0;
-        }
-        
-        &:hover {
-            > .btn {
-                opacity: 1;
-            }
-        }
-    }
+	main {
+		@include themed() {
+			background-image: get-theme-value('bg-desktop-image');
+		}
+	}
+
+	.wrapper {
+		max-width: 650px;
+		min-height: 80vh;
+	}
+
+	.filters {
+		flex: 1;
+	}
+
+	.todo-item {
+		> .btn {
+			opacity: 0;
+		}
+
+		&:hover {
+			> .btn {
+				opacity: 1;
+			}
+		}
+	}
 }
