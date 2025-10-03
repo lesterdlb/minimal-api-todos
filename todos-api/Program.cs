@@ -1,12 +1,25 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using todos_api;
 using todos_api.Context;
-using todos_api.Contracts;
+using todos_api.Endpoints;
+using todos_api.Middleware;
 using todos_api.Services;
 
 const string allowSpecificOrigins = "_allowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+
+builder.Host.UseSerilog((_, _, configuration) =>
+{
+    configuration
+        .MinimumLevel.Information()
+        .Enrich.FromLogContext()
+        .WriteTo.Console();
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -14,6 +27,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApiContext>(opt =>
     opt.UseInMemoryDatabase("api"));
 builder.Services.AddScoped<ITodoService, TodoService>();
+
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddCors(options =>
 {
@@ -27,6 +42,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging();
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -35,28 +53,8 @@ if (app.Environment.IsDevelopment())
 
 Data.AddTodoData(app);
 
-app.MapGet("/api/todos", async (ITodoService service, bool? completed) =>
-{
-    var response = await service.GetTodos(completed);
-    return response;
-});
-
-app.MapPost("/api/todos", async (ITodoService service, TodoRequest todo) =>
-    await service.CreateTodo(todo));
-
-app.MapPut("/api/todos/{id:guid}/status", async (ITodoService service, Guid id) =>
-    await service.UpdateTodoStatus(id));
-
-app.MapPut("/api/todos/{originalIndex:int}/{newIndex:int}/index",
-    async (ITodoService service, int originalIndex, int newIndex) =>
-        await service.UpdateTodoIndex(originalIndex, newIndex));
-
-app.MapDelete("api/todos", async (ITodoService service) =>
-    await service.DeleteCompletedTodos());
-
-app.MapDelete("api/todos/{id:guid}", async (ITodoService service, Guid id) =>
-    await service.DeleteTodo(id));
-
 app.UseCors(allowSpecificOrigins);
+
+app.MapTodoEndpoints();
 
 await app.RunAsync();

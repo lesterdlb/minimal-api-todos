@@ -24,13 +24,16 @@ public class TodoService(ApiContext context) : ITodoService
         );
         await context.SaveChangesAsync();
 
-        return Results.Created($"/todos/{todo.Entity.Id}", todo.Entity);
+        return Results.Created($"/api/todos/{todo.Entity.Id}", todo.Entity);
     }
 
     public async Task<IResult> UpdateTodoStatus(Guid id)
     {
         var todo = await context.Todos.FindAsync(id);
-        if (todo is null) return Results.NotFound();
+        if (todo is null)
+        {
+            return Results.NotFound(new { success = false, message = "Todo not found" });
+        }
 
         todo.IsCompleted = !todo.IsCompleted;
         await context.SaveChangesAsync();
@@ -38,38 +41,45 @@ public class TodoService(ApiContext context) : ITodoService
         return Results.Ok(todo);
     }
 
-    public async Task<IResult> UpdateTodoIndex(int originalIndex, int newIndex)
+    public async Task<IResult> UpdateTodoIndex(Guid id, int newIndex)
     {
-        var todo = await context.Todos.FirstOrDefaultAsync(t => t.Index == originalIndex);
-        if (todo is null) return Results.NotFound();
-
-        if (originalIndex > newIndex)
+        var todo = await context.Todos.FindAsync(id);
+        if (todo is null)
         {
-            var todos = await context.Todos
-                .Where(t => t.Index > newIndex - 1 && t.Index < originalIndex)
-                .ToListAsync();
-
-            todos.ForEach(t => t.Index++);
+            return Results.NotFound(new { success = false, message = "Todo not found" });
         }
 
-        if (originalIndex < newIndex)
-        {
-            var todos = await context.Todos
-                .Where(t => t.Index < newIndex + 1 && t.Index > originalIndex)
+        var oldIndex = todo.Index;
+        if (oldIndex == newIndex) return Results.Ok(todo);
+
+        // Obtener solo los todos afectados en una consulta
+        var affectedTodos = oldIndex < newIndex
+            ? await context.Todos
+                .Where(t => t.Index > oldIndex && t.Index <= newIndex)
+                .ToListAsync()
+            : await context.Todos
+                .Where(t => t.Index >= newIndex && t.Index < oldIndex)
                 .ToListAsync();
 
-            todos.ForEach(t => t.Index--);
+        // Ajustar índices
+        foreach (var t in affectedTodos)
+        {
+            t.Index += oldIndex < newIndex ? -1 : 1;
         }
 
         todo.Index = newIndex;
         await context.SaveChangesAsync();
-        return Results.Ok("Updated");
+
+        return Results.Ok(new { success = true, message = "Index updated", data = todo });
     }
 
     public async Task<IResult> DeleteTodo(Guid id)
     {
         var todo = await context.Todos.FindAsync(id);
-        if (todo == null) return Results.NotFound();
+        if (todo == null)
+        {
+            return Results.NotFound(new { success = false, message = "Todo not found" });
+        }
 
         context.Todos.Remove(todo);
         await context.SaveChangesAsync();

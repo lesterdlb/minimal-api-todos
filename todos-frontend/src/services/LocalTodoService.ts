@@ -1,60 +1,64 @@
 import BaseService from './BaseService';
-import {CreateTodo, Todo} from '../model/Todo';
-import {FakeData} from '../data/FakeData';
+import { CreateTodo, Todo } from '../model/Todo';
+import { FakeData } from '../data/FakeData';
 
 class LocalTodoService implements BaseService {
-    private _todoList: Todo[];
+	private _todoList: Todo[];
 
-    constructor() {
-        this._todoList = FakeData;
-    }
+	constructor() {
+		this._todoList = FakeData;
+	}
 
-    getTodos(completed?: boolean): Promise<Todo[]> {
-        const todos = this._todoList.sort((a, b) => a.index - b.index);
-        return completed !== undefined
-            ? Promise.resolve(todos.filter(todo => todo.isCompleted === completed))
-            : Promise.resolve(todos);
-    }
+	getTodos(completed?: boolean): Promise<Todo[]> {
+		const todos = this._todoList.sort((a, b) => a.index - b.index);
+		return completed !== undefined
+			? Promise.resolve(todos.filter(todo => todo.isCompleted === completed))
+			: Promise.resolve(todos);
+	}
 
-    addTodo(todo: CreateTodo): Promise<Todo> {
-        const newTodo = {
-            id: Date.now().toString(),
-            title: todo.title,
-            isCompleted: todo.isCompleted,
-            index: this._todoList.length
-        };
-        this._todoList = [...this._todoList, newTodo];
-        return Promise.resolve(newTodo);
-    }
+	addTodo(todo: CreateTodo): Promise<Todo> {
+		const newTodo = {
+			id: Date.now().toString(),
+			title: todo.title,
+			isCompleted: todo.isCompleted,
+			index: this._todoList.length,
+		};
+		this._todoList = [...this._todoList, newTodo];
+		return Promise.resolve(newTodo);
+	}
 
-    updateTodoStatus(id: string): void {
-        this._todoList = this._todoList.map(todo =>
-            todo.id === id ? {...todo, isCompleted: !todo.isCompleted} : todo
-        );
-    }
+	updateTodoStatus(id: string): void {
+		this._todoList = this._todoList.map(todo =>
+			todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
+		);
+	}
 
-    updateTodoIndex(originalIndex: number, newIndex: number): void {
-        if (originalIndex > newIndex) {
-            const newTodos = [...this._todoList];
-            newTodos.map(todo => todo.index > newIndex - 1 && todo.index < originalIndex ? todo.index++ : todo.index);
-            newTodos[originalIndex].index = newIndex;
-            this._todoList = newTodos;
-        }
-        if (originalIndex < newIndex) {
-            const newTodos = [...this._todoList];
-            newTodos.map(todo => todo.index < newIndex + 1 && todo.index > originalIndex ? todo.index-- : todo);
-            newTodos[originalIndex].index = newIndex;
-            this._todoList = newTodos;
-        }
-    }
+	updateTodoIndex(id: string, newIndex: number): void {
+		const todo = this._todoList.find(t => t.id === id);
+		if (!todo) return;
 
-    deleteTodo(id: string): void {
-        this._todoList = this._todoList.filter(todo => todo.id !== id);
-    }
+		const oldIndex = todo.index;
+		if (oldIndex === newIndex) return;
 
-    deleteCompletedTodos(): void {
-        this._todoList = this._todoList.filter(todo => !todo.isCompleted);
-    }
+		const affectedTodos =
+			oldIndex < newIndex
+				? this._todoList.filter(t => t.index > oldIndex && t.index <= newIndex)
+				: this._todoList.filter(t => t.index >= newIndex && t.index < oldIndex);
+
+		affectedTodos.forEach(t => {
+			t.index += oldIndex < newIndex ? -1 : 1;
+		});
+
+		todo.index = newIndex;
+	}
+
+	deleteTodo(id: string): void {
+		this._todoList = this._todoList.filter(todo => todo.id !== id);
+	}
+
+	deleteCompletedTodos(): void {
+		this._todoList = this._todoList.filter(todo => !todo.isCompleted);
+	}
 }
 
 export default new LocalTodoService();
