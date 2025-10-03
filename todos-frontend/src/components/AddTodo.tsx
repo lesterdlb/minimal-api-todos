@@ -40,12 +40,7 @@ const AddTodo = ({ onAddTodo }: AddTodoProps) => {
 				minLength={3}
 				aria-label='New todo'
 			/>
-			<button
-				type='submit'
-				title='Add Todo'
-				className='btn add-todo'
-				aria-label='Add todo'
-			>
+			<button type='submit' title='Add Todo' className='btn add-todo' aria-label='Add todo'>
 				+
 			</button>
 		</form>

@@ -1,8 +1,8 @@
-import { FiltersTypes } from '../constants';
+import { FilterType, FILTERS } from '../constants/index';
 
 interface FilterProps {
-	activeFilter: FiltersTypes;
-	onFilterChange: (filter: FiltersTypes) => void;
+	activeFilter: FilterType;
+	onFilterChange: (filter: FilterType) => void;
 }
 
 const Filters = ({ activeFilter, onFilterChange }: FilterProps) => {
@@ -11,20 +11,20 @@ const Filters = ({ activeFilter, onFilterChange }: FilterProps) => {
 	return (
 		<div className='filters'>
 			<button
-				className={`link ${activeFilter === FiltersTypes.ALL ? className : ''}`}
-				onClick={() => onFilterChange(FiltersTypes.ALL)}
+				className={`link ${activeFilter === FILTERS.ALL ? className : ''}`}
+				onClick={() => onFilterChange(FILTERS.ALL)}
 			>
 				All
 			</button>
 			<button
-				className={`link ${activeFilter === FiltersTypes.ACTIVE ? className : ''}`}
-				onClick={() => onFilterChange(FiltersTypes.ACTIVE)}
+				className={`link ${activeFilter === FILTERS.ACTIVE ? className : ''}`}
+				onClick={() => onFilterChange(FILTERS.ACTIVE)}
 			>
 				Active
 			</button>
 			<button
-				className={`link ${activeFilter === FiltersTypes.COMPLETED ? className : ''}`}
-				onClick={() => onFilterChange(FiltersTypes.COMPLETED)}
+				className={`link ${activeFilter === FILTERS.COMPLETED ? className : ''}`}
+				onClick={() => onFilterChange(FILTERS.COMPLETED)}
 			>
 				Completed
 			</button>

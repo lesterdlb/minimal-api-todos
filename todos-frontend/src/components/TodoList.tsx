@@ -1,70 +1,77 @@
-import { FC, memo, useCallback, useEffect, useState } from 'react';
+import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import { Todo } from '../model/Todo';
-import { ItemTypes, FiltersTypes } from '../constants';
+import { ITEM_TYPES, FILTERS, FilterType } from '../constants/index';
 
 // Components
 import AddTodo from './AddTodo';
 import TodoItem from './TodoItem';
 import Filters from './Filters';
 
-// Service
-import TodoService from '../services/TodoService';
-
 // Hooks
 import useWindowSize from '../hooks/useWindowSize';
+import { useTodoService } from '../hooks/useTodoService';
 
 const MOBILE_BREAKPOINT = 800;
 
 const TodoList: FC = memo(() => {
+	const todoService = useTodoService();
 	const [todos, setTodos] = useState<Todo[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
-	const [, drop] = useDrop(() => ({ accept: ItemTypes.TODO }));
+	const [, drop] = useDrop(() => ({ accept: ITEM_TYPES.TODO }));
 	const size = useWindowSize();
-	const [activeFilter, setActiveFilter] = useState<FiltersTypes>(FiltersTypes.ALL);
+	const [activeFilter, setActiveFilter] = useState<FilterType>(FILTERS.ALL);
 
-	const fetchTodos = useCallback(async (completed?: boolean) => {
-		setLoading(true);
-		setError(null);
-		try {
-			const response = await TodoService.getTodos(completed);
-			setTodos(response);
-		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Error loading todos';
-			setError(message);
-			console.error('Error fetching todos:', err);
-		} finally {
-			setLoading(false);
+	const filteredTodos = useMemo(() => {
+		switch (activeFilter) {
+			case FILTERS.ACTIVE:
+				return todos.filter(t => !t.isCompleted);
+			case FILTERS.COMPLETED:
+				return todos.filter(t => t.isCompleted);
+			default:
+				return todos;
 		}
-	}, []);
+	}, [todos, activeFilter]);
+
+	const fetchTodos = useCallback(
+		async (completed?: boolean) => {
+			setLoading(true);
+			setError(null);
+			try {
+				const response = await todoService.getTodos(completed);
+				setTodos(response);
+			} catch (err) {
+				const message = err instanceof Error ? err.message : 'Error loading todos';
+				setError(message);
+				console.error('Error fetching todos:', err);
+			} finally {
+				setLoading(false);
+			}
+		},
+		[todoService]
+	);
 
 	// Drag and Drop Functions
-	const findTodo = useCallback(
-		(id: string) => {
-			const todo = todos.filter(t => t.id === id)[0];
-			return { todo, index: todos.indexOf(todo) };
-		},
-		[todos]
-	);
+	const findTodo = (id: string) => {
+		const todo = todos.filter(t => t.id === id)[0];
+		return { todo, index: todos.indexOf(todo) };
+	};
 
-	const moveTodo = useCallback(
-		(id: string, atIndex: number) => {
-			const { index } = findTodo(id);
-			setTodos(prevTodos => {
-				const newTodos = [...prevTodos];
-				const [removed] = newTodos.splice(index, 1);
-				newTodos.splice(atIndex, 0, removed);
-				return newTodos;
-			});
-		},
-		[findTodo, setTodos]
-	);
+	const moveTodo = (id: string, atIndex: number) => {
+		const { index } = findTodo(id);
+		setTodos(prevTodos => {
+			const newTodos = [...prevTodos];
+			const [removed] = newTodos.splice(index, 1);
+			newTodos.splice(atIndex, 0, removed);
+			return newTodos;
+		});
+	};
 
 	// Events Handlers
-	const handleAddTodo = useCallback(async (title: string) => {
+	const handleAddTodo = async (title: string) => {
 		try {
-			const todo = await TodoService.addTodo({ title, isCompleted: false });
+			const todo = await todoService.addTodo({ title, isCompleted: false });
 			setTodos(prevTodos => [...prevTodos, todo]);
 			setError(null);
 		} catch (err) {
@@ -72,11 +79,11 @@ const TodoList: FC = memo(() => {
 			setError(message);
 			console.error('Error adding todo:', err);
 		}
-	}, []);
+	};
 
-	const handleUpdateStatus = useCallback(async (id: string) => {
+	const handleUpdateStatus = async (id: string) => {
 		try {
-			await TodoService.updateTodoStatus(id);
+			await todoService.updateTodoStatus(id);
 			setTodos(prevTodos =>
 				prevTodos.map(todo =>
 					todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
@@ -88,11 +95,11 @@ const TodoList: FC = memo(() => {
 			setError(message);
 			console.error('Error updating status:', err);
 		}
-	}, []);
+	};
 
-	const handleDeleteTodo = useCallback(async (id: string) => {
+	const handleDeleteTodo = async (id: string) => {
 		try {
-			await TodoService.deleteTodo(id);
+			await todoService.deleteTodo(id);
 			setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
 			setError(null);
 		} catch (err) {
@@ -100,11 +107,11 @@ const TodoList: FC = memo(() => {
 			setError(message);
 			console.error('Error deleting todo:', err);
 		}
-	}, []);
+	};
 
-	const handleDeleteCompletedTodos = useCallback(async () => {
+	const handleDeleteCompletedTodos = async () => {
 		try {
-			await TodoService.deleteCompletedTodos();
+			await todoService.deleteCompletedTodos();
 			setTodos(prevTodos => prevTodos.filter(todo => !todo.isCompleted));
 			setError(null);
 		} catch (err) {
@@ -112,30 +119,30 @@ const TodoList: FC = memo(() => {
 			setError(message);
 			console.error('Error deleting completed:', err);
 		}
-	}, []);
+	};
 
-	const handleFilterChange = useCallback(async (filter: FiltersTypes) => {
+	const handleFilterChange = async (filter: FilterType) => {
 		setActiveFilter(filter);
-		try {
-			switch (filter) {
-				case FiltersTypes.ALL:
-					await fetchTodos();
-					break;
-				case FiltersTypes.ACTIVE:
-					await fetchTodos(false);
-					break;
-				case FiltersTypes.COMPLETED:
-					await fetchTodos(true);
-					break;
-			}
-		} catch (err) {
-			console.error('Error filtering todos:', err);
-		}
-	}, [fetchTodos]);
+		// try {
+		// 	switch (filter) {
+		// 		case FILTERS.ALL:
+		// 			await fetchTodos();
+		// 			break;
+		// 		case FILTERS.ACTIVE:
+		// 			await fetchTodos(false);
+		// 			break;
+		// 		case FILTERS.COMPLETED:
+		// 			await fetchTodos(true);
+		// 			break;
+		// 	}
+		// } catch (err) {
+		// 	console.error('Error filtering todos:', err);
+		// }
+	};
 
-	const handleUpdateTodoIndex = useCallback(async (id: string, newIndex: number) => {
+	const handleUpdateTodoIndex = async (id: string, newIndex: number) => {
 		try {
-			await TodoService.updateTodoIndex(id, newIndex);
+			await todoService.updateTodoIndex(id, newIndex);
 			await fetchTodos();
 			setError(null);
 		} catch (err) {
@@ -143,7 +150,7 @@ const TodoList: FC = memo(() => {
 			setError(message);
 			console.error('Error updating index:', err);
 		}
-	}, [fetchTodos]);
+	};
 
 	useEffect(() => {
 		fetchTodos().catch(console.error);
@@ -180,7 +187,7 @@ const TodoList: FC = memo(() => {
 								drop(node);
 							}}
 						>
-							{todos.map(todo => (
+							{filteredTodos.map(todo => (
 								<TodoItem
 									key={todo.id}
 									todo={todo}

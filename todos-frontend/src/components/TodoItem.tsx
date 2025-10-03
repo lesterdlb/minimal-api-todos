@@ -2,7 +2,7 @@ import { FC, memo } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import Cross from '../images/icon-cross.svg?react';
 import { Todo } from '../model/Todo';
-import { ItemTypes } from '../constants';
+import { ITEM_TYPES } from '../constants/index';
 
 export interface TodoItemProps {
 	todo: Todo;
@@ -24,7 +24,7 @@ const TodoItem: FC<TodoItemProps> = memo(
 
 		const [{ isDragging }, drag] = useDrag(
 			() => ({
-				type: ItemTypes.TODO,
+				type: ITEM_TYPES.TODO,
 				item: { todo, originalIndex },
 				collect: monitor => ({
 					isDragging: monitor.isDragging(),
@@ -42,7 +42,7 @@ const TodoItem: FC<TodoItemProps> = memo(
 
 		const [, drop] = useDrop(
 			() => ({
-				accept: ItemTypes.TODO,
+				accept: ITEM_TYPES.TODO,
 				hover: ({ todo: draggedTodo }: Item) => {
 					if (draggedTodo.id !== todo.id) {
 						const { index: overIndex } = findTodo(todo.id);
@@ -73,7 +73,9 @@ const TodoItem: FC<TodoItemProps> = memo(
 					<input
 						type='checkbox'
 						title={`Mark as ${todo.isCompleted ? 'incomplete' : 'complete'}`}
-						aria-label={`Mark "${todo.title}" as ${todo.isCompleted ? 'incomplete' : 'complete'}`}
+						aria-label={`Mark "${todo.title}" as ${
+							todo.isCompleted ? 'incomplete' : 'complete'
+						}`}
 						checked={todo.isCompleted}
 						onChange={() => onStatusChange(todo.id)}
 					/>
