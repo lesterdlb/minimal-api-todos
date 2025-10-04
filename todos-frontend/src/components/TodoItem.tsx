@@ -6,59 +6,47 @@ import { ITEM_TYPES } from '../constants/index';
 
 export interface TodoItemProps {
 	todo: Todo;
-	moveTodo: (id: string, to: number) => void;
-	findTodo: (id: string) => { index: number };
+	index: number;
+	onMove: (dragIndex: number, hoverIndex: number) => void;
+	onDrop: (id: string, newIndex: number) => void;
 	onStatusChange: (id: string) => void;
 	onDeleteTodo: (id: string) => void;
-	onTodoIndexChange: (id: string, newIndex: number) => void;
 }
 
-interface Item {
-	todo: Todo;
-	originalIndex: number;
+interface DragItem {
+	id: string;
+	index: number;
 }
 
 const TodoItem: FC<TodoItemProps> = memo(
-	({ todo, moveTodo, findTodo, onStatusChange, onDeleteTodo, onTodoIndexChange }) => {
-		const originalIndex = findTodo(todo.id).index;
-
+	({ todo, index, onMove, onDrop, onStatusChange, onDeleteTodo }) => {
 		const [{ isDragging }, drag] = useDrag(
 			() => ({
 				type: ITEM_TYPES.TODO,
-				item: { todo, originalIndex },
+				item: { id: todo.id, index },
 				collect: monitor => ({
 					isDragging: monitor.isDragging(),
 				}),
-				end: (item, monitor) => {
-					const { todo: droppedTodo, originalIndex } = item;
-					const didDrop = monitor.didDrop();
-					if (!didDrop) {
-						moveTodo(droppedTodo.id, originalIndex);
-					}
-				},
 			}),
-			[todo, originalIndex, moveTodo]
+			[todo.id, index]
 		);
 
 		const [, drop] = useDrop(
 			() => ({
 				accept: ITEM_TYPES.TODO,
-				hover: ({ todo: draggedTodo }: Item) => {
-					if (draggedTodo.id !== todo.id) {
-						const { index: overIndex } = findTodo(todo.id);
-						moveTodo(draggedTodo.id, overIndex);
+				hover: (item: DragItem) => {
+					if (item.index !== index) {
+						onMove(item.index, index);
+						item.index = index;
 					}
 				},
-				drop: (item: Item) => {
-					const { index: overIndex } = findTodo(todo.id);
-					if (item.originalIndex === overIndex) {
-						return;
-					}
-					onTodoIndexChange(item.todo.id, overIndex);
+				drop: (item: DragItem) => {
+					onDrop(item.id, index);
 				},
 			}),
-			[findTodo, moveTodo]
+			[index, onMove, onDrop]
 		);
+
 		const opacity = isDragging ? 0 : 1;
 
 		return (

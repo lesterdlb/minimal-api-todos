@@ -9,10 +9,7 @@ import TodoItem from './TodoItem';
 import Filters from './Filters';
 
 // Hooks
-import useWindowSize from '../hooks/useWindowSize';
 import { useTodoService } from '../hooks/useTodoService';
-
-const MOBILE_BREAKPOINT = 800;
 
 const TodoList: FC = memo(() => {
 	const todoService = useTodoService();
@@ -20,7 +17,6 @@ const TodoList: FC = memo(() => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 	const [, drop] = useDrop(() => ({ accept: ITEM_TYPES.TODO }));
-	const size = useWindowSize();
 	const [activeFilter, setActiveFilter] = useState<FilterType>(FILTERS.ALL);
 
 	const filteredTodos = useMemo(() => {
@@ -53,28 +49,33 @@ const TodoList: FC = memo(() => {
 	);
 
 	// Drag and Drop Functions
-	const findTodo = (id: string) => {
-		const todo = todos.filter(t => t.id === id)[0];
-		return { todo, index: todos.indexOf(todo) };
-	};
-
-	const moveTodo = (id: string, atIndex: number) => {
-		const { index } = findTodo(id);
+	const moveTodo = (dragIndex: number, hoverIndex: number) => {
 		setTodos(prevTodos => {
 			const newTodos = [...prevTodos];
-			const [removed] = newTodos.splice(index, 1);
-			newTodos.splice(atIndex, 0, removed);
+			const [removed] = newTodos.splice(dragIndex, 1);
+			newTodos.splice(hoverIndex, 0, removed);
 			return newTodos;
 		});
 	};
 
 	// Events Handlers
 	const handleAddTodo = async (title: string) => {
+		const tempId = `temp-${Date.now()}`;
+		const tempTodo: Todo = {
+			id: tempId,
+			title,
+			isCompleted: false,
+			index: todos.length,
+		};
+
+		setTodos(prevTodos => [...prevTodos, tempTodo]);
+
 		try {
-			const todo = await todoService.addTodo({ title, isCompleted: false });
-			setTodos(prevTodos => [...prevTodos, todo]);
+			const savedTodo = await todoService.addTodo({ title, isCompleted: false });
+			setTodos(prevTodos => prevTodos.map(todo => (todo.id === tempId ? savedTodo : todo)));
 			setError(null);
 		} catch (err) {
+			setTodos(prevTodos => prevTodos.filter(todo => todo.id !== tempId));
 			const message = err instanceof Error ? err.message : 'Error adding todo';
 			setError(message);
 			console.error('Error adding todo:', err);
@@ -82,15 +83,19 @@ const TodoList: FC = memo(() => {
 	};
 
 	const handleUpdateStatus = async (id: string) => {
+		const previousTodos = todos;
+
+		setTodos(prevTodos =>
+			prevTodos.map(todo =>
+				todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
+			)
+		);
+
 		try {
 			await todoService.updateTodoStatus(id);
-			setTodos(prevTodos =>
-				prevTodos.map(todo =>
-					todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
-				)
-			);
 			setError(null);
 		} catch (err) {
+			setTodos(previousTodos);
 			const message = err instanceof Error ? err.message : 'Error updating status';
 			setError(message);
 			console.error('Error updating status:', err);
@@ -98,11 +103,15 @@ const TodoList: FC = memo(() => {
 	};
 
 	const handleDeleteTodo = async (id: string) => {
+		const previousTodos = todos;
+
+		setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+
 		try {
 			await todoService.deleteTodo(id);
-			setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
 			setError(null);
 		} catch (err) {
+			setTodos(previousTodos);
 			const message = err instanceof Error ? err.message : 'Error deleting todo';
 			setError(message);
 			console.error('Error deleting todo:', err);
@@ -110,42 +119,33 @@ const TodoList: FC = memo(() => {
 	};
 
 	const handleDeleteCompletedTodos = async () => {
+		const previousTodos = todos;
+
+		setTodos(prevTodos => prevTodos.filter(todo => !todo.isCompleted));
+
 		try {
 			await todoService.deleteCompletedTodos();
-			setTodos(prevTodos => prevTodos.filter(todo => !todo.isCompleted));
 			setError(null);
 		} catch (err) {
+			setTodos(previousTodos);
 			const message = err instanceof Error ? err.message : 'Error deleting completed todos';
 			setError(message);
-			console.error('Error deleting completed:', err);
+			console.error('Error deleting completed todos:', err);
 		}
 	};
 
 	const handleFilterChange = async (filter: FilterType) => {
 		setActiveFilter(filter);
-		// try {
-		// 	switch (filter) {
-		// 		case FILTERS.ALL:
-		// 			await fetchTodos();
-		// 			break;
-		// 		case FILTERS.ACTIVE:
-		// 			await fetchTodos(false);
-		// 			break;
-		// 		case FILTERS.COMPLETED:
-		// 			await fetchTodos(true);
-		// 			break;
-		// 	}
-		// } catch (err) {
-		// 	console.error('Error filtering todos:', err);
-		// }
 	};
 
-	const handleUpdateTodoIndex = async (id: string, newIndex: number) => {
+	const handleDrop = async (id: string, newIndex: number) => {
+		const previousTodos = todos;
+
 		try {
 			await todoService.updateTodoIndex(id, newIndex);
-			await fetchTodos();
 			setError(null);
 		} catch (err) {
+			setTodos(previousTodos);
 			const message = err instanceof Error ? err.message : 'Error reordering todos';
 			setError(message);
 			console.error('Error updating index:', err);
@@ -175,11 +175,17 @@ const TodoList: FC = memo(() => {
 				</div>
 			)}
 			<div className='todos-container'>
-				{loading && <div className='empty-todos-container'>Loading ...</div>}
-				{!loading && todos.length === 0 && !error && (
+				{loading && (
+					<div className='loading-overlay'>
+						<span>Loading...</span>
+					</div>
+				)}
+
+				{todos.length === 0 && !loading && !error && (
 					<div className='empty-todos-container'>No todos found</div>
 				)}
-				{!loading && todos && (
+
+				{todos.length > 0 && (
 					<>
 						<ul
 							className='todos'
@@ -187,15 +193,15 @@ const TodoList: FC = memo(() => {
 								drop(node);
 							}}
 						>
-							{filteredTodos.map(todo => (
+							{filteredTodos.map((todo, index) => (
 								<TodoItem
 									key={todo.id}
 									todo={todo}
-									moveTodo={moveTodo}
-									findTodo={findTodo}
+									index={index}
+									onMove={moveTodo}
+									onDrop={handleDrop}
 									onStatusChange={handleUpdateStatus}
 									onDeleteTodo={handleDeleteTodo}
-									onTodoIndexChange={handleUpdateTodoIndex}
 								/>
 							))}
 						</ul>
@@ -203,12 +209,11 @@ const TodoList: FC = memo(() => {
 							<p className='left'>
 								<span id='count'>{todos.length}</span> items left
 							</p>
-							{size.width > MOBILE_BREAKPOINT ? (
-								<Filters
-									activeFilter={activeFilter}
-									onFilterChange={handleFilterChange}
-								/>
-							) : null}
+							<Filters
+								activeFilter={activeFilter}
+								onFilterChange={handleFilterChange}
+								className='filters-desktop'
+							/>
 							<button
 								className='link clear-completed-btn'
 								onClick={handleDeleteCompletedTodos}
@@ -219,9 +224,11 @@ const TodoList: FC = memo(() => {
 					</>
 				)}
 			</div>
-			{size.width <= MOBILE_BREAKPOINT ? (
-				<Filters activeFilter={activeFilter} onFilterChange={handleFilterChange} />
-			) : null}
+			<Filters
+				activeFilter={activeFilter}
+				onFilterChange={handleFilterChange}
+				className='filters-mobile'
+			/>
 		</>
 	);
 });

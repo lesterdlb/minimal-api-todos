@@ -3,8 +3,33 @@
 @use '../mixins' as *;
 
 .todos-container {
+	position: relative;
+
 	@include themed() {
 		box-shadow: 0 8px 15px get-theme-value('shadow-color');
+	}
+
+	.loading-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 10;
+		pointer-events: none;
+
+		@include themed() {
+			background-color: rgba(get-theme-value('bg-secondary-color'), 0.7);
+			color: get-theme-value('text-primary-color');
+		}
+
+		span {
+			font-size: 1rem;
+			font-weight: $font-bold;
+		}
 	}
 }
 
